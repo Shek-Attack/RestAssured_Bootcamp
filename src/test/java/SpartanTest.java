@@ -32,7 +32,9 @@ public class SpartanTest {
                 .header("content-type", "text/plain;charset=UTF-8")
         ; }
       @Test
+
     public static void teardown(){
         RestAssured.reset();
+        // Erber and Renaay
 }
 }
