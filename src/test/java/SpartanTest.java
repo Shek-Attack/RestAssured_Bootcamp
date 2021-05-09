@@ -1,5 +1,6 @@
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.*;
@@ -54,6 +55,27 @@ public class SpartanTest {
                  ;
 
         }
+
+        @DisplayName("Testing GET /api/spartans search Endpoint")
+        @Test
+        public void testSearch(){
+        given()
+                .log().all()
+                .queryParams("nameContain","re").
+                queryParams("gender","Male")
+        .when()
+                .get("/spartans/search")
+        .then()
+                .log().all()
+                .statusCode(200)
+//                .body("content.name",everyItem( Matchers.containsString("re")))
+//                .body("content.gender", everyItem(is("Male")))
+        // make sure all gender is Male
+        //this is where hamcrast coming in play
+                     ;
+                   }
+
+
         @Order(1)  //Determines the order
         @DisplayName("Testing POST  /api/spartans   Endpoint")
         @Test
@@ -81,7 +103,6 @@ public class SpartanTest {
                              .extract()
                              .body()
                              .jsonPath().getInt("data.id")
-
                     ;
         }
         @Order(2)
@@ -113,11 +134,11 @@ public class SpartanTest {
         Map<String, Object> spartanMap = new HashMap<>();
             spartanMap.put("name", "Yucel");
             spartanMap.put("gender", "Male");
-            spartanMap.put("phone", 1234567890);
+            spartanMap.put("phone", 1236547890);
 
             given().
                     log().all().
-                    contentType(ContentType.JSON).  // tells the server the type of data
+                    contentType(ContentType.JSON).  // tells the server the type of data you are sending
                     body(spartanMap).
             when().
                     put("/spartans/{id}",idFromPostTest)
@@ -126,15 +147,14 @@ public class SpartanTest {
 
             // now let's send another get request to make sure it actually updated
             when().
-                    get("/spartan/{id}",idFromPostTest)
+                    get("/spartans/{id}",idFromPostTest)
             .then()
                     .log().all().
                     statusCode(200)
-                   .body("id",is(idFromPostTest))
+                   .body("id", is(idFromPostTest))
                    .body("name", is(spartanMap.get("name")) )
                    .body("gender", is(spartanMap.get("gender")))
                    .body("phone", is(spartanMap.get("phone")))
-
                     ;
         }
 
@@ -143,7 +163,7 @@ public class SpartanTest {
            @Test
            public void testPartialUpdate1Data(){
             //just updating phone number to 2123435678
-            String patchBody = "{ \"phone\": 3154964396}";
+            String patchBody = "{ \"phone\": 2123435678}";
 
             given()
                     .log().all()
@@ -162,10 +182,25 @@ public class SpartanTest {
                        .statusCode(200)
                        .body("phone",is(2123435678))
                        ;
+                }
 
+                @Order(5)
+                @DisplayName(" Testing Delete /api/spartans/{id} Endpoint")
+                @Test
+                public void testDelete1Data(){
 
+                    when()
+                            .delete("/spartans/{id}",idFromPostTest).
+                            then()
+                            .statusCode(204);
 
-    }
+                    //now send another get request to make sure you get 404
+                    when().
+                            get("/spartans/{id}",idFromPostTest)
+                    .then().
+                            statusCode(404);
+
+                }
 
     public static void teardown(){
         RestAssured.reset();
