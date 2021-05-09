@@ -1,16 +1,9 @@
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.*;
-
-import javax.security.auth.Subject;
 import java.util.HashMap;
 import java.util.Map;
-
 import static io.restassured.RestAssured.*;
-import static io.restassured.matcher.RestAssuredMatchers.*;
 import static org.hamcrest.Matchers.*;
 
 
